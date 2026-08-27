@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VitalsPass | Pass Core Web Vitals on Magento</title>
+    <meta name="description" content="Get your Magento store passing Core Web Vitals in 21 days without a replatform or developer resources.">
+    <link rel="canonical" href="https://vitalspass.com">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FAQPage JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "What counts as passing Core Web Vitals?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Passing requires a 75th-percentile Largest Contentful Paint (LCP) of 2.5 seconds or less, Interaction to Next Paint (INP) of 200 milliseconds or less, and Cumulative Layout Shift (CLS) of 0.1 or less on mobile devices. We use the public Chrome User Experience Report (CrUX) to verify this."
+        }
+      }, {
+        "@type": "Question",
+        "name": "I already migrated to Hyvä and I still fail. Can you help?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Hyvä provides a fast foundation. Third-party scripts and poor layout configurations often cause failures regardless of the theme. We fix those specific bottlenecks."
+        }
+      }, {
+        "@type": "Question",
+        "name": "How much of my engineering team does this take?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Roughly four hours total. We work in our own branch and provide a reviewable pull request. Your team only needs to review and merge."
+        }
+      }]
+    }
+    </script>
+    
+    <style>
+        /* Synced Before & After Loading Animation */
+        @keyframes simProgress {
+            0% { width: 0%; }
+            70% { width: 100%; }
+            100% { width: 100%; }
+        }
+        
+        @keyframes slowLoad {
+            0%, 20% { opacity: 0; transform: translateY(4px); }
+            35% { opacity: 0.3; }
+            65% { opacity: 0.7; transform: translateY(-4px); } /* Layout Shift */
+            75%, 100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slowSpinner {
+            0%, 65% { opacity: 1; }
+            75%, 100% { opacity: 0; }
+        }
+
+        @keyframes fastLoad {
+            0% { opacity: 0; }
+            15%, 100% { opacity: 1; }
+        }
+
+        @keyframes fastSkeleton {
+            0% { opacity: 1; }
+            15%, 100% { opacity: 0; }
+        }
+
+        .anim-progress-bar {
+            animation: simProgress 6.5s infinite ease-in-out;
+        }
+
+        .anim-slow-content {
+            animation: slowLoad 6.5s infinite ease-in-out;
+        }
+
+        .anim-slow-spinner {
+            animation: slowSpinner 6.5s infinite ease-in-out;
+        }
+
+        .anim-fast-content {
+            animation: fastLoad 6.5s infinite ease-in-out;
+        }
+
+        .anim-fast-skeleton {
+            animation: fastSkeleton 6.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased overflow-x-hidden">
+
+    <!-- Navbar -->
+    <nav class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center border-b border-gray-200 bg-white">
+        <div class="font-bold text-xl tracking-tight text-gray-900 flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-orange-600 inline-block"></span>
+            VitalsPass
+        </div>
+        <div class="text-sm font-medium text-gray-500">A service of Best Worlds</div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="max-w-5xl mx-auto px-4 pt-10 pb-12 lg:pt-16 lg:pb-16 grid lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+        <div class="lg:col-span-6">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight text-gray-950 mb-4 tracking-tight">
+                Get your Magento store passing Core Web Vitals in 21 days.
+            </h1>
+            <p class="text-base sm:text-lg text-gray-600 mb-6 leading-relaxed">
+                No Hyvä migration, no headless rebuild, and zero internal engineering required. We optimize your existing theme in an isolated branch with just 4 hours of your team's time.
+            </p>
+            
+            <!-- Email Capture Form -->
+            <form action="https://formkeep.com/f/placeholder" method="POST" class="w-full max-w-lg mb-2">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <label for="store_url" class="sr-only">Your store URL</label>
+                    <input type="url" id="store_url" name="store_url" required placeholder="https://yourstore.com" 
+                        class="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none bg-white shadow-sm">
+                    <button type="submit" class="px-5 py-3 bg-gray-950 hover:bg-gray-800 text-white font-bold text-sm rounded-lg focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all whitespace-nowrap shadow">
+                        Get my $100 diagnostic
+                    </button>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-500 mt-2.5 font-medium">
+                    <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                    <span>$100 maximum downside. You keep the root-cause report either way.</span>
+                </div>
+            </form>
+        </div>
+
+        <!-- Animated Before / After Website Loading Simulation -->
+        <div class="lg:col-span-6 bg-gray-950 p-4 sm:p-5 rounded-2xl shadow-xl border border-gray-800 text-white">
+            <div class="flex items-center justify-between border-b border-gray-800 pb-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                </div>
+                <div class="text-[11px] font-mono text-gray-400 bg-gray-900 px-2 py-0.5 rounded border border-gray-800">
+                    <span id="loadTimer">0.0s</span>
+                </div>
+            </div>
+
+            <!-- Progress Tracker -->
+            <div class="w-full bg-gray-800 h-1 rounded-full mb-4 overflow-hidden">
+                <div class="bg-orange-500 h-full anim-progress-bar rounded-full"></div>
+            </div>
+
+            <!-- Two Comparison Viewports -->
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Before Viewport (Slow Load) -->
+                <div class="bg-gray-900 rounded-xl p-3 border border-red-950/60 relative overflow-hidden flex flex-col justify-between h-56">
+                    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-800">
+                        <span class="text-[11px] font-bold text-red-400">Before (Current Theme)</span>
+                        <span class="text-[10px] font-mono text-red-400 bg-red-950/70 border border-red-800/60 px-1.5 py-0.5 rounded">4.2s LCP</span>
+                    </div>
+
+                    <!-- Inner Simulated Screen -->
+                    <div class="flex-1 bg-white rounded-lg p-2.5 text-gray-900 relative overflow-hidden flex flex-col justify-between shadow-inner">
+                        <!-- Loading Spinner / Blank phase -->
+                        <div class="absolute inset-0 bg-white/95 anim-slow-spinner flex flex-col items-center justify-center z-10">
+                            <div class="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin mb-1"></div>
+                            <span class="text-[10px] font-semibold text-gray-400">Render blocking...</span>
+                        </div>
+
+                        <!-- Rendered Content (Delayed & Shifted) -->
+                        <div class="anim-slow-content space-y-1.5">
+                            <div class="h-2 w-16 bg-gray-800 rounded"></div>
+                            <div class="h-14 bg-gradient-to-tr from-gray-200 to-gray-300 rounded flex items-center justify-center text-[10px] text-gray-500 font-medium">
+                                Product Banner
+                            </div>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <div class="h-10 bg-gray-100 rounded border border-gray-200 p-1">
+                                    <div class="h-1.5 w-8 bg-gray-300 rounded mb-1"></div>
+                                    <div class="h-1.5 w-5 bg-red-400 rounded"></div>
+                                </div>
+                                <div class="h-10 bg-gray-100 rounded border border-gray-200 p-1">
+                                    <div class="h-1.5 w-8 bg-gray-300 rounded mb-1"></div>
+                                    <div class="h-1.5 w-5 bg-red-400 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 text-center">
+                        <span class="text-[10px] text-red-400 font-semibold">❌ Layout Shift & Lag</span>
+                    </div>
+                </div>
+
+                <!-- After Viewport (Fast Load with VitalsPass) -->
+                <div class="bg-gray-900 rounded-xl p-3 border border-emerald-950/60 relative overflow-hidden flex flex-col justify-between h-56">
+                    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-800">
+                        <span class="text-[11px] font-bold text-emerald-400">With VitalsPass</span>
+                        <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/70 border border-emerald-800/60 px-1.5 py-0.5 rounded">1.8s LCP</span>
+                    </div>
+
+                    <!-- Inner Simulated Screen -->
+                    <div class="flex-1 bg-white rounded-lg p-2.5 text-gray-900 relative overflow-hidden flex flex-col justify-between shadow-inner">
+                        <!-- Skeleton Phase (Fast) -->
+                        <div class="absolute inset-0 bg-white anim-fast-skeleton p-2.5 space-y-1.5 z-10 pointer-events-none">
+                            <div class="h-2 w-16 bg-gray-200 rounded animate-pulse"></div>
+                            <div class="h-14 bg-gray-100 rounded animate-pulse"></div>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <div class="h-10 bg-gray-100 rounded animate-pulse"></div>
+                                <div class="h-10 bg-gray-100 rounded animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        <!-- Instantly Rendered & Stable Content -->
+                        <div class="anim-fast-content space-y-1.5">
+                            <div class="h-2 w-16 bg-gray-900 rounded"></div>
+                            <div class="h-14 bg-gradient-to-tr from-emerald-600 to-teal-500 rounded flex items-center justify-center text-[10px] text-white font-bold shadow-sm">
+                                Instant Hero
+                            </div>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <div class="h-10 bg-emerald-50 rounded border border-emerald-200 p-1">
+                                    <div class="h-1.5 w-8 bg-gray-800 rounded mb-1"></div>
+                                    <div class="h-1.5 w-5 bg-emerald-600 rounded"></div>
+                                </div>
+                                <div class="h-10 bg-emerald-50 rounded border border-emerald-200 p-1">
+                                    <div class="h-1.5 w-8 bg-gray-800 rounded mb-1"></div>
+                                    <div class="h-1.5 w-5 bg-emerald-600 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 text-center">
+                        <span class="text-[10px] text-emerald-400 font-semibold">✓ Instant Paint & Stable</span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-[11px] text-gray-400 mt-3 text-center">
+                Visual demonstration of render-order optimization on existing theme.
+            </p>
+        </div>
+    </header>
+
+    <!-- Client Wins Section -->
+    <section class="border-y border-gray-200 bg-white py-14">
+        <div class="max-w-5xl mx-auto px-4">
+            <h2 class="text-center text-2xl sm:text-3xl font-extrabold text-gray-950 mb-3">Client Wins</h2>
+            <p class="text-center text-sm text-gray-600 max-w-xl mx-auto mb-10">Real Adobe Commerce & Magento stores optimized without replatforming.</p>
+            
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Case 1: TAG Motorsports -->
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 sm:p-7 flex flex-col justify-between hover:shadow-md transition-shadow">
+                    <div>
+                        <!-- Logo & Store Details (No Pill Badges) -->
+                        <div class="flex items-center justify-between border-b border-gray-200 pb-4 mb-5">
+                            <div class="h-8 flex items-center">
+                                <svg class="h-7 w-auto" viewBox="0 0 160 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 0H38V8H23V36H15V8H0V0Z" fill="#111827"/>
+                                    <path d="M36 36L52 0H62L78 36H68L64.5 28H49.5L46 36H36ZM52.5 21H61.5L57 9.5L52.5 21Z" fill="#DC2626"/>
+                                    <path d="M78 18C78 7.5 86 0 98 0C108 0 115 6 116.5 15H108C106.8 9.5 103 6.5 98 6.5C89.5 6.5 86.5 12.5 86.5 18C86.5 23.5 89.5 29.5 98 29.5C103 29.5 106.5 27 107.5 22H97V16H116V36H108.5L108 31.5C105.5 34.5 101.5 36 96.5 36C85.5 36 78 28.5 78 18Z" fill="#111827"/>
+                                    <text x="122" y="34" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="7.5" fill="#6B7280" letter-spacing="1.5">MOTORSPORTS</text>
+                                </svg>
+                            </div>
+                            <span class="text-xs font-semibold text-gray-500">100k+ SKUs</span>
+                        </div>
+
+                        <!-- Technical Win -->
+                        <div class="mb-5">
+                            <div class="text-3xl font-extrabold text-gray-950 tracking-tight">-3.2s LCP</div>
+                            <div class="text-xs text-gray-500 font-medium mt-0.5">Adobe Commerce • Luma Theme Retained</div>
+                        </div>
+
+                        <!-- Clean Aligned Metric List -->
+                        <div class="space-y-3 pt-1">
+                            <div class="flex items-start gap-3">
+                                <span class="text-emerald-700 font-bold text-sm shrink-0 whitespace-nowrap w-16 tabular-nums">+18.4%</span>
+                                <span class="text-gray-600 text-sm leading-snug">Mobile checkout completion rate</span>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-emerald-700 font-bold text-sm shrink-0 whitespace-nowrap w-16 tabular-nums">+22.7%</span>
+                                <span class="text-gray-600 text-sm leading-snug">Revenue per visitor (RPV) on mobile</span>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-emerald-700 font-bold text-sm shrink-0 whitespace-nowrap w-16 tabular-nums">-14.0%</span>
+                                <span class="text-gray-600 text-sm leading-snug">Paid traffic bounce rate on catalog pages</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-gray-200 text-[11px] text-gray-400">
+                        Origin-level Chrome UX Report data • Adobe Commerce
+                    </div>
+                </div>
+
+                <!-- Case 2: Great Lakes Skipper -->
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 sm:p-7 flex flex-col justify-between hover:shadow-md transition-shadow">
+                    <div>
+                        <!-- Logo & Store Details (No Pill Badges) -->
+                        <div class="flex items-center justify-between border-b border-gray-200 pb-4 mb-5">
+                            <div class="h-8 flex items-center">
+                                <svg class="h-7 w-auto" viewBox="0 0 190 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g stroke="#0284C7" stroke-width="2" fill="none">
+                                        <circle cx="18" cy="19" r="11"/>
+                                        <circle cx="18" cy="19" r="5" fill="#0369A1"/>
+                                        <line x1="18" y1="3" x2="18" y2="35"/>
+                                        <line x1="2" y1="19" x2="34" y2="19"/>
+                                        <line x1="7" y1="8" x2="29" y2="30"/>
+                                        <line x1="7" y1="30" x2="29" y2="8"/>
+                                    </g>
+                                    <text x="40" y="18" font-family="Georgia, serif" font-weight="bold" font-size="14" fill="#0F172A">GREAT LAKES</text>
+                                    <text x="40" y="32" font-family="Georgia, serif" font-weight="bold" font-size="12" fill="#0284C7" letter-spacing="1">SKIPPER</text>
+                                </svg>
+                            </div>
+                            <span class="text-xs font-semibold text-gray-500">Marine Parts</span>
+                        </div>
+
+                        <!-- Technical Win -->
+                        <div class="mb-5">
+                            <div class="text-3xl font-extrabold text-emerald-600 tracking-tight">Fail → Pass</div>
+                            <div class="text-xs text-gray-500 font-medium mt-0.5">Magento 2 • Existing Theme Retained</div>
+                        </div>
+
+                        <!-- Clean Aligned Metric List -->
+                        <div class="space-y-3 pt-1">
+                            <div class="flex items-start gap-3">
+                                <span class="text-emerald-700 font-bold text-sm shrink-0 whitespace-nowrap w-16 tabular-nums">+14.2%</span>
+                                <span class="text-gray-600 text-sm leading-snug">Add-to-cart rate on mobile category filters</span>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-emerald-700 font-bold text-sm shrink-0 whitespace-nowrap w-16 tabular-nums">+$310k</span>
+                                <span class="text-gray-600 text-sm leading-snug">Estimated annual incremental GMV from speed</span>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-emerald-700 font-bold text-sm shrink-0 whitespace-nowrap w-16 tabular-nums">0 Days</span>
+                                <span class="text-gray-600 text-sm leading-snug">Replatform downtime or engineering hiring</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-gray-200 text-[11px] text-gray-400">
+                        100% Passing CrUX Origin Status • Magento 2
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem / Bottom-Line Impact Section -->
+    <section class="max-w-5xl mx-auto px-4 py-16">
+        <div class="max-w-2xl mb-10">
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-950">What slow rendering costs your bottom line.</h2>
+            <p class="text-sm sm:text-base text-gray-600 mt-2">Controlled enterprise A/B split tests prove the commercial upside of passing Core Web Vitals.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+            <!-- Card 1: Conversion & RPV -->
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div>
+                    <div class="text-3xl sm:text-4xl font-extrabold text-orange-600 font-mono tracking-tight mb-2">+33%</div>
+                    <h3 class="text-lg font-bold text-gray-950 mb-2">Up to 33% Conversion Increase</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                        In a month-long 50/50 controlled split test, Rakuten 24 optimized Core Web Vitals and unlocked a <strong class="text-gray-900">33% conversion rate lift</strong> alongside a <strong class="text-gray-900">53% increase in revenue per visitor</strong>.
+                    </p>
+                </div>
+                <a href="https://web.dev/rakuten-24/" class="text-xs text-orange-600 font-bold hover:underline inline-flex items-center gap-1 pt-3 border-t border-gray-100" target="_blank" rel="noopener">
+                    Read Google Case Study ↗
+                </a>
+            </div>
+
+            <!-- Card 2: Paid Ad Efficiency -->
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div>
+                    <div class="text-3xl sm:text-4xl font-extrabold text-orange-600 font-mono tracking-tight mb-2">+8%</div>
+                    <h3 class="text-lg font-bold text-gray-950 mb-2">More Orders from Same Ad Spend</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                        Vodafone split-tested a 31% faster LCP across 100k daily paid clicks. Speed alone produced <strong class="text-gray-900">8% more completed checkouts</strong> without increasing ad spend by a single dollar.
+                    </p>
+                </div>
+                <a href="https://web.dev/vodafone/" class="text-xs text-orange-600 font-bold hover:underline inline-flex items-center gap-1 pt-3 border-t border-gray-100" target="_blank" rel="noopener">
+                    Read Google Case Study ↗
+                </a>
+            </div>
+
+            <!-- Card 3: Organic Visibility & Downside Protection -->
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div>
+                    <div class="text-3xl sm:text-4xl font-extrabold text-gray-950 font-mono tracking-tight mb-2">0 Risk</div>
+                    <h3 class="text-lg font-bold text-gray-950 mb-2">Eliminate Google Search Penalties</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                        Google Search uses Core Web Vitals as an active page-experience ranking factor. Failing the 28-day CrUX threshold creates a measurable <strong class="text-gray-900">visibility liability</strong> against passing competitors.
+                    </p>
+                </div>
+                <a href="https://developers.google.com/search/docs/appearance/core-web-vitals" class="text-xs text-orange-600 font-bold hover:underline inline-flex items-center gap-1 pt-3 border-t border-gray-100" target="_blank" rel="noopener">
+                    Read Google Docs ↗
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works (3 Steps) -->
+    <section class="bg-gray-950 text-white py-16">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="text-center max-w-xl mx-auto mb-12">
+                <h2 class="text-2xl sm:text-3xl font-extrabold">Three steps. You only pay in full on success.</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-extrabold mb-1">01. Diagnostic</h3>
+                        <div class="text-2xl font-black text-white font-mono mb-3">$100</div>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-4">We pull your CrUX field data, identify rendering bottlenecks in your theme stack, and give you a go/no-go qualification.</p>
+                    </div>
+                    <div class="text-xs font-semibold text-gray-500 border-t border-gray-800 pt-3">~5 business days</div>
+                </div>
+                <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-extrabold mb-1">02. Implementation</h3>
+                        <div class="text-2xl font-black text-white font-mono mb-3">$5k–$15k <span class="text-xs text-gray-400 font-sans font-normal">typical</span></div>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-4">We fix load order, render-blocking scripts, and layout shift in our own branch. We deliver a clean, reviewable pull request.</p>
+                    </div>
+                    <div class="text-xs font-semibold text-gray-500 border-t border-gray-800 pt-3">14–21 business days • ~4 hrs of your team</div>
+                </div>
+                <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-extrabold mb-1">03. Confirmation</h3>
+                        <div class="text-2xl font-black text-emerald-400 font-mono mb-3">Success Fee</div>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-4">CrUX uses a 28-day rolling window. The success fee is agreed upfront and owed only when public numbers show a pass.</p>
+                    </div>
+                    <div class="text-xs font-semibold text-emerald-500 border-t border-gray-800 pt-3">Owed only on confirmed CrUX pass</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guarantee Section -->
+    <section class="max-w-5xl mx-auto px-4 py-16 text-center">
+        <div class="max-w-2xl mx-auto mb-10">
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-950 mb-3">Three public thresholds decide if we get paid.</h2>
+            <p class="text-sm sm:text-base text-gray-600">Most performance guarantees promise vague improvements. Ours is verified in Google's public Chrome User Experience Report at the 75th percentile mobile.</p>
+        </div>
+        
+        <div class="grid sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+            <div class="p-5 border border-gray-200 rounded-xl bg-white shadow-sm">
+                <div class="text-3xl font-black text-gray-950 font-mono mb-1">≤ 2.5s</div>
+                <h3 class="font-bold text-gray-900 text-sm">LCP</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Largest Contentful Paint</p>
+            </div>
+            <div class="p-5 border border-gray-200 rounded-xl bg-white shadow-sm">
+                <div class="text-3xl font-black text-gray-950 font-mono mb-1">≤ 200ms</div>
+                <h3 class="font-bold text-gray-900 text-sm">INP</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Interaction to Next Paint</p>
+            </div>
+            <div class="p-5 border border-gray-200 rounded-xl bg-white shadow-sm">
+                <div class="text-3xl font-black text-gray-950 font-mono mb-1">≤ 0.1</div>
+                <h3 class="font-bold text-gray-900 text-sm">CLS</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Cumulative Layout Shift</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="border-t border-gray-200 bg-gray-50">
+        <div class="max-w-3xl mx-auto px-4 py-14">
+            <h2 class="text-2xl font-extrabold text-gray-950 mb-8 text-center">Frequently Asked Questions</h2>
+            <div class="space-y-5">
+                <div class="bg-white p-5 rounded-xl border border-gray-200">
+                    <h3 class="font-bold text-base text-gray-900">What counts as passing Core Web Vitals?</h3>
+                    <p class="text-sm text-gray-600 mt-2 leading-relaxed">Passing requires a 75th-percentile Largest Contentful Paint (LCP) of 2.5 seconds or less, Interaction to Next Paint (INP) of 200 milliseconds or less, and Cumulative Layout Shift (CLS) of 0.1 or less on mobile devices in Google's CrUX field dataset.</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200">
+                    <h3 class="font-bold text-base text-gray-900">I already migrated to Hyvä and still fail. Can you help?</h3>
+                    <p class="text-sm text-gray-600 mt-2 leading-relaxed">Yes. Hyvä provides a clean baseline, but heavy third-party tag managers, tracking pixels, and unreserved banner layouts still trigger LCP and CLS failures. We resolve those specific bottlenecks.</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200">
+                    <h3 class="font-bold text-base text-gray-900">How much of my engineering team does this take?</h3>
+                    <p class="text-sm text-gray-600 mt-2 leading-relaxed">Roughly four hours total across the entire engagement. We work in an isolated git branch and provide an audited pull request. Your team only conducts standard QA and deployment.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Banner -->
+    <section class="bg-white border-t border-gray-200 py-12 text-center">
+        <div class="max-w-2xl mx-auto px-4">
+            <h2 class="text-2xl font-extrabold text-gray-950 mb-3">See if your store qualifies.</h2>
+            <p class="text-sm text-gray-600 mb-6">Fixed fee agreed upfront. Success fee owed only on a verified public pass.</p>
+            <form action="https://formkeep.com/f/placeholder" method="POST" class="w-full max-w-md mx-auto">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="url" name="store_url" required placeholder="https://yourstore.com" 
+                        class="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 outline-none">
+                    <button type="submit" class="px-5 py-3 bg-gray-950 hover:bg-gray-800 text-white font-bold text-sm rounded-lg transition-all shadow">
+                        Get my $100 diagnostic
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-50 border-t border-gray-200 py-8">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+            <div>
+                © 2026 Best Worlds. All rights reserved. • 4079 Governor Dr #302, San Diego, CA
+            </div>
+            <div class="flex gap-4 font-medium">
+                <a href="/privacy-policy" class="hover:text-gray-900">Privacy Policy</a>
+                <a href="/cookie-policy" class="hover:text-gray-900">Cookie Policy</a>
+                <a href="/contact" class="hover:text-gray-900">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Synced Live Timer Script -->
+    <script>
+        const timerEl = document.getElementById('loadTimer');
+        let startTime = Date.now();
+        const cycleDuration = 6500; // 6.5s animation cycle
+
+        function updateTimer() {
+            const elapsed = (Date.now() - startTime) % cycleDuration;
+            const seconds = (elapsed / 1000).toFixed(1);
+            if (timerEl) {
+                timerEl.textContent = `${seconds}s`;
+            }
+            requestAnimationFrame(updateTimer);
+        }
+        requestAnimationFrame(updateTimer);
+    </script>
+</body>
+</html>
