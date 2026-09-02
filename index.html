@@ -473,94 +473,64 @@
         </div>
         <div class="grid md:grid-cols-3 gap-6">
             <!-- Card 1: Protected Checkout -->
-            <div class="p-6 bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="p-6 sm:p-7 bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
                 <div>
-                    <!-- Visual Micro-graphic -->
-                    <div class="mb-5 bg-gray-950 rounded-xl p-3.5 text-white border border-gray-800 shadow-inner">
-                        <div class="flex items-center justify-between text-[11px] font-mono text-gray-400 border-b border-gray-800/80 pb-2 mb-2.5">
-                            <span class="flex items-center gap-1.5 text-gray-300 font-semibold">
-                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                Route Protection
-                            </span>
-                            <span class="text-emerald-400 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-800/60 font-semibold text-[10px]">Active</span>
-                        </div>
-                        <div class="space-y-1.5 text-xs">
-                            <div class="flex items-center justify-between bg-gray-900 px-2.5 py-1.5 rounded border border-gray-800">
-                                <span class="text-gray-300 font-mono text-[11px]">/catalog/*</span>
-                                <span class="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">⚡ Speed Optimized</span>
-                            </div>
-                            <div class="flex items-center justify-between bg-gray-900 px-2.5 py-1.5 rounded border border-emerald-800/50">
-                                <span class="text-gray-300 font-mono text-[11px]">/checkout/*</span>
-                                <span class="text-[10px] text-amber-300 font-semibold flex items-center gap-1">🔒 100% Untouched</span>
-                            </div>
-                        </div>
+                    <!-- Icon Container -->
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 mb-5 shadow-sm">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
                     </div>
 
-                    <h3 class="font-bold text-gray-950 text-base mb-2">100% Protected Checkout</h3>
+                    <div class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full mb-3 border border-emerald-200">
+                        <span>●</span> Cart &amp; Checkout Protected
+                    </div>
+
+                    <h3 class="font-bold text-gray-950 text-lg mb-2">Zero risk to your checkout</h3>
                     <p class="text-sm text-gray-600 leading-relaxed">
-                        We never optimize scripts on your cart, checkout, or payment gateways. Transactional routes remain untouched so revenue flows with zero disruption.
+                        We never optimize or defer scripts on your cart, checkout, or payment gateways. Your transactions and payment processing remain 100% untouched.
                     </p>
                 </div>
             </div>
 
             <!-- Card 2: No Theme Files Hacked -->
-            <div class="p-6 bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="p-6 sm:p-7 bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
                 <div>
-                    <!-- Visual Micro-graphic -->
-                    <div class="mb-5 bg-gray-950 rounded-xl p-3.5 text-white border border-gray-800 shadow-inner">
-                        <div class="flex items-center justify-between text-[11px] font-mono text-gray-400 border-b border-gray-800/80 pb-2 mb-2.5">
-                            <span class="flex items-center gap-1.5 text-gray-300 font-semibold">
-                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                                Codebase Integrity
-                            </span>
-                            <span class="text-blue-400 bg-blue-950/80 px-1.5 py-0.5 rounded border border-blue-800/60 font-semibold text-[10px]">0 Diffs</span>
-                        </div>
-                        <div class="space-y-1.5 text-xs">
-                            <div class="flex items-center justify-between bg-gray-900 px-2.5 py-1.5 rounded border border-gray-800">
-                                <span class="text-gray-300 font-mono text-[11px]">templates/*.phtml</span>
-                                <span class="text-[10px] text-emerald-400 font-semibold">✓ 0 Files Modified</span>
-                            </div>
-                            <div class="flex items-center justify-between bg-gray-900 px-2.5 py-1.5 rounded border border-gray-800">
-                                <span class="text-gray-300 font-mono text-[11px]">HTTP Output Layer</span>
-                                <span class="text-[10px] text-orange-400 font-semibold">⚡ Optimized in Memory</span>
-                            </div>
-                        </div>
+                    <!-- Icon Container -->
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 mb-5 shadow-sm">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
                     </div>
 
-                    <h3 class="font-bold text-gray-950 text-base mb-2">No Theme Files Hacked</h3>
+                    <div class="inline-flex items-center gap-1.5 text-[11px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full mb-3 border border-blue-200">
+                        <span>●</span> Zero Theme Overrides
+                    </div>
+
+                    <h3 class="font-bold text-gray-950 text-lg mb-2">Your theme files stay untouched</h3>
                     <p class="text-sm text-gray-600 leading-relaxed">
-                        We optimize the rendered output, not your underlying templates. Your .phtml files and custom extensions stay clean, readable, and upgrade-ready.
+                        We don't rewrite your theme templates or edit core code. Your existing design and custom extensions stay clean, readable, and ready for future upgrades.
                     </p>
                 </div>
             </div>
 
             <!-- Card 3: Stays Fast After Every Deploy -->
-            <div class="p-6 bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="p-6 sm:p-7 bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
                 <div>
-                    <!-- Visual Micro-graphic -->
-                    <div class="mb-5 bg-gray-950 rounded-xl p-3.5 text-white border border-gray-800 shadow-inner">
-                        <div class="flex items-center justify-between text-[11px] font-mono text-gray-400 border-b border-gray-800/80 pb-2 mb-2.5">
-                            <span class="flex items-center gap-1.5 text-gray-300 font-semibold">
-                                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
-                                Automated Page Warmer
-                            </span>
-                            <span class="text-orange-400 bg-orange-950/80 px-1.5 py-0.5 rounded border border-orange-800/60 font-semibold text-[10px]">Active</span>
-                        </div>
-                        <div class="space-y-1.5 text-xs">
-                            <div class="flex items-center justify-between bg-gray-900 px-2.5 py-1.5 rounded border border-gray-800">
-                                <span class="text-gray-300 font-mono text-[11px]">Post-Deploy Cache</span>
-                                <span class="text-[10px] text-emerald-400 font-semibold">Pre-Warmed (0 Cold)</span>
-                            </div>
-                            <div class="flex items-center justify-between bg-gray-900 px-2.5 py-1.5 rounded border border-gray-800">
-                                <span class="text-gray-300 font-mono text-[11px]">Shopper Cache Hit</span>
-                                <span class="text-[10px] text-emerald-400 font-bold">~50ms Instant Edge</span>
-                            </div>
-                        </div>
+                    <!-- Icon Container -->
+                    <div class="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 mb-5 shadow-sm">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
                     </div>
 
-                    <h3 class="font-bold text-gray-950 text-base mb-2">Stays Fast After Every Deploy</h3>
+                    <div class="inline-flex items-center gap-1.5 text-[11px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-full mb-3 border border-orange-200">
+                        <span>●</span> Pre-Warmed Cache
+                    </div>
+
+                    <h3 class="font-bold text-gray-950 text-lg mb-2">Stays fast after every update</h3>
                     <p class="text-sm text-gray-600 leading-relaxed">
-                        Catalog updates and code releases often wipe standard caches. Our automated warmer pre-builds priority pages so shoppers never hit a cold server.
+                        Standard site speed drops when you update catalog prices or deploy code. Our automated background warmer pre-loads pages so shoppers never hit a slow server.
                     </p>
                 </div>
             </div>
