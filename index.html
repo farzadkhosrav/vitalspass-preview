@@ -42,37 +42,28 @@
     </script>
     
     <style>
-        /* Synced Before & After Loading Animation */
-        @keyframes simProgress {
-            0% { width: 0%; }
-            70% { width: 100%; }
-            100% { width: 100%; }
-        }
-        
+        /* Synced Before & After Loading Race Animation */
         @keyframes slowLoad {
-            0%, 20% { opacity: 0; transform: translateY(4px); }
-            35% { opacity: 0.3; }
-            65% { opacity: 0.7; transform: translateY(-4px); } /* Layout Shift */
-            75%, 100% { opacity: 1; transform: translateY(0); }
+            0%, 55% { opacity: 0; transform: translateY(6px); }
+            62% { opacity: 1; transform: translateY(-8px); } /* Visible Layout Shift (CLS) */
+            68%, 92% { opacity: 1; transform: translateY(0); }
+            96%, 100% { opacity: 0; transform: translateY(6px); }
         }
 
         @keyframes slowSpinner {
-            0%, 65% { opacity: 1; }
-            75%, 100% { opacity: 0; }
+            0%, 55% { opacity: 1; pointer-events: auto; }
+            62%, 100% { opacity: 0; pointer-events: none; }
         }
 
         @keyframes fastLoad {
-            0% { opacity: 0; }
-            15%, 100% { opacity: 1; }
+            0%, 5% { opacity: 0; }
+            22%, 92% { opacity: 1; }
+            96%, 100% { opacity: 0; }
         }
 
         @keyframes fastSkeleton {
             0% { opacity: 1; }
-            15%, 100% { opacity: 0; }
-        }
-
-        .anim-progress-bar {
-            animation: simProgress 6.5s infinite ease-in-out;
+            20%, 100% { opacity: 0; pointer-events: none; }
         }
 
         .anim-slow-content {
@@ -131,110 +122,128 @@
         </div>
 
         <!-- Animated Before / After Website Loading Simulation -->
+        <!-- Animated Before / After Real-Shopper Speed Race Simulation -->
         <div class="lg:col-span-6 bg-gray-950 p-4 sm:p-5 rounded-2xl shadow-xl border border-gray-800 text-white">
+            <!-- Terminal / Browser Window Top Bar -->
             <div class="flex items-center justify-between border-b border-gray-800 pb-3 mb-4">
                 <div class="flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
                     <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
                     <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                    <span class="text-[11px] font-medium text-gray-400 ml-1 hidden sm:inline">Simulated 4G Mobile Load Test (75th Percentile CrUX)</span>
                 </div>
-                <div class="text-[11px] font-mono text-gray-400 bg-gray-900 px-2 py-0.5 rounded border border-gray-800">
-                    <span id="loadTimer">0.0s</span>
-                </div>
-            </div>
-
-            <!-- Progress Tracker -->
-            <div class="w-full bg-gray-800 h-1 rounded-full mb-4 overflow-hidden">
-                <div class="bg-orange-500 h-full anim-progress-bar rounded-full"></div>
-            </div>
-
-            <!-- Two Comparison Viewports -->
-            <div class="grid grid-cols-2 gap-3">
-                <!-- Before Viewport (Slow Load) -->
-                <div class="bg-gray-900 rounded-xl p-3 border border-red-950/60 relative overflow-hidden flex flex-col justify-between h-56">
-                    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-800">
-                        <span class="text-[11px] font-bold text-red-400">Before (Current Theme)</span>
-                        <span class="text-[10px] font-mono text-red-400 bg-red-950/70 border border-red-800/60 px-1.5 py-0.5 rounded">4.2s LCP</span>
-                    </div>
-
-                    <!-- Inner Simulated Screen -->
-                    <div class="flex-1 bg-white rounded-lg p-2.5 text-gray-900 relative overflow-hidden flex flex-col justify-between shadow-inner">
-                        <!-- Loading Spinner / Blank phase -->
-                        <div class="absolute inset-0 bg-white/95 anim-slow-spinner flex flex-col items-center justify-center z-10">
-                            <div class="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin mb-1"></div>
-                            <span class="text-[10px] font-semibold text-gray-400">Render blocking...</span>
-                        </div>
-
-                        <!-- Rendered Content (Delayed & Shifted) -->
-                        <div class="anim-slow-content space-y-1.5">
-                            <div class="h-2 w-16 bg-gray-800 rounded"></div>
-                            <div class="h-14 bg-gradient-to-tr from-gray-200 to-gray-300 rounded flex items-center justify-center text-[10px] text-gray-500 font-medium">
-                                Product Banner
-                            </div>
-                            <div class="grid grid-cols-2 gap-1.5">
-                                <div class="h-10 bg-gray-100 rounded border border-gray-200 p-1">
-                                    <div class="h-1.5 w-8 bg-gray-300 rounded mb-1"></div>
-                                    <div class="h-1.5 w-5 bg-red-400 rounded"></div>
-                                </div>
-                                <div class="h-10 bg-gray-100 rounded border border-gray-200 p-1">
-                                    <div class="h-1.5 w-8 bg-gray-300 rounded mb-1"></div>
-                                    <div class="h-1.5 w-5 bg-red-400 rounded"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-2 text-center">
-                        <span class="text-[10px] text-red-400 font-semibold">❌ Layout Shift & Lag</span>
-                    </div>
-                </div>
-
-                <!-- After Viewport (Fast Load with VitalsPass) -->
-                <div class="bg-gray-900 rounded-xl p-3 border border-emerald-950/60 relative overflow-hidden flex flex-col justify-between h-56">
-                    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-800">
-                        <span class="text-[11px] font-bold text-emerald-400">With VitalsPass</span>
-                        <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/70 border border-emerald-800/60 px-1.5 py-0.5 rounded">1.8s LCP</span>
-                    </div>
-
-                    <!-- Inner Simulated Screen -->
-                    <div class="flex-1 bg-white rounded-lg p-2.5 text-gray-900 relative overflow-hidden flex flex-col justify-between shadow-inner">
-                        <!-- Skeleton Phase (Fast) -->
-                        <div class="absolute inset-0 bg-white anim-fast-skeleton p-2.5 space-y-1.5 z-10 pointer-events-none">
-                            <div class="h-2 w-16 bg-gray-200 rounded animate-pulse"></div>
-                            <div class="h-14 bg-gray-100 rounded animate-pulse"></div>
-                            <div class="grid grid-cols-2 gap-1.5">
-                                <div class="h-10 bg-gray-100 rounded animate-pulse"></div>
-                                <div class="h-10 bg-gray-100 rounded animate-pulse"></div>
-                            </div>
-                        </div>
-
-                        <!-- Instantly Rendered & Stable Content -->
-                        <div class="anim-fast-content space-y-1.5">
-                            <div class="h-2 w-16 bg-gray-900 rounded"></div>
-                            <div class="h-14 bg-gradient-to-tr from-emerald-600 to-teal-500 rounded flex items-center justify-center text-[10px] text-white font-bold shadow-sm">
-                                Instant Hero
-                            </div>
-                            <div class="grid grid-cols-2 gap-1.5">
-                                <div class="h-10 bg-emerald-50 rounded border border-emerald-200 p-1">
-                                    <div class="h-1.5 w-8 bg-gray-800 rounded mb-1"></div>
-                                    <div class="h-1.5 w-5 bg-emerald-600 rounded"></div>
-                                </div>
-                                <div class="h-10 bg-emerald-50 rounded border border-emerald-200 p-1">
-                                    <div class="h-1.5 w-8 bg-gray-800 rounded mb-1"></div>
-                                    <div class="h-1.5 w-5 bg-emerald-600 rounded"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-2 text-center">
-                        <span class="text-[10px] text-emerald-400 font-semibold">✓ Instant Paint & Stable</span>
-                    </div>
+                <div class="flex items-center gap-1.5 text-[10px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-2 py-0.5 rounded">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Live Race</span>
                 </div>
             </div>
 
-            <p class="text-[11px] text-gray-400 mt-3 text-center">
-                Visual demonstration of render-order optimization on existing theme.
+            <!-- Two Comparison Viewports: BEFORE vs AFTER -->
+            <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                <!-- BEFORE Column: Current Theme (Slow & Glitchy) -->
+                <div class="bg-gray-900 rounded-xl p-3 border border-red-900/40 relative overflow-hidden flex flex-col justify-between h-72">
+                    <!-- Column Header with Independent Stopwatch -->
+                    <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-gray-800">
+                        <span class="text-[10px] sm:text-[11px] font-extrabold text-red-400 bg-red-950/80 border border-red-800/80 px-2 py-0.5 rounded-full uppercase tracking-wide">Before</span>
+                        <span id="timerBefore" class="text-[11px] font-mono text-gray-400 bg-black/60 px-2 py-0.5 rounded font-bold">0.0s</span>
+                    </div>
+
+                    <!-- Inner Simulated Mobile Storefront -->
+                    <div class="flex-1 bg-white rounded-lg text-gray-900 relative overflow-hidden flex flex-col justify-between shadow-inner border border-gray-200">
+                        <!-- Mini Store Nav Header -->
+                        <div class="flex items-center justify-between px-2.5 py-1.5 bg-gray-100 border-b border-gray-200 text-[10px] font-semibold text-gray-700">
+                            <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>Storefront</span>
+                            <span class="text-[9px] font-mono text-gray-500">Cart (0)</span>
+                        </div>
+
+                        <!-- Loading Spinner / Blank Phase -->
+                        <div class="absolute inset-0 bg-white/95 anim-slow-spinner flex flex-col items-center justify-center z-20">
+                            <div class="w-6 h-6 border-2 border-red-600 border-t-transparent rounded-full animate-spin mb-1.5"></div>
+                            <span class="text-[10px] font-bold text-gray-500">Loading assets...</span>
+                            <span class="text-[8px] text-red-500 font-mono mt-0.5">Render blocking</span>
+                        </div>
+
+                        <!-- Rendered Ecommerce Product (Delayed & Glitches) -->
+                        <div class="p-2 anim-slow-content space-y-1.5 flex-1 flex flex-col justify-between">
+                            <!-- Product Image Area -->
+                            <div class="h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded flex items-center justify-center text-gray-400 border border-gray-200 relative">
+                                <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                            <!-- Product Details -->
+                            <div>
+                                <div class="text-[10px] font-bold text-gray-900 truncate">Performance Intake Kit</div>
+                                <div class="text-[9px] text-gray-500">★★★★☆ • <span class="font-bold text-gray-900">$189.00</span></div>
+                            </div>
+                            <!-- Action Button (Jumps down on CLS shift) -->
+                            <div class="w-full py-1 bg-gray-800 text-white rounded text-[9px] font-bold text-center">
+                                Add to Cart
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Status Tag -->
+                    <div class="mt-2.5 text-center">
+                        <span class="text-[10px] text-red-400 font-bold bg-red-950/60 border border-red-900/80 px-2 py-0.5 rounded-full inline-block">
+                            ✕ 4.2s LCP • Fails Google
+                        </span>
+                    </div>
+                </div>
+
+                <!-- AFTER Column: With VitalsPass (Instant & Passing) -->
+                <div class="bg-gray-900 rounded-xl p-3 border border-emerald-600/50 relative overflow-hidden flex flex-col justify-between h-72 shadow-lg shadow-emerald-950/40">
+                    <!-- Column Header with Independent Stopwatch -->
+                    <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-gray-800">
+                        <span class="text-[10px] sm:text-[11px] font-extrabold text-emerald-300 bg-emerald-950/90 border border-emerald-700/80 px-2 py-0.5 rounded-full uppercase tracking-wide">With VitalsPass</span>
+                        <span id="timerAfter" class="text-[11px] font-mono text-gray-400 bg-black/60 px-2 py-0.5 rounded font-bold">0.0s</span>
+                    </div>
+
+                    <!-- Inner Simulated Mobile Storefront -->
+                    <div class="flex-1 bg-white rounded-lg text-gray-900 relative overflow-hidden flex flex-col justify-between shadow-inner border border-emerald-200">
+                        <!-- Mini Store Nav Header -->
+                        <div class="flex items-center justify-between px-2.5 py-1.5 bg-emerald-50 border-b border-emerald-100 text-[10px] font-semibold text-emerald-900">
+                            <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Storefront</span>
+                            <span class="text-[9px] font-mono text-emerald-700 font-bold">Cart (1)</span>
+                        </div>
+
+                        <!-- Brief Fast Skeleton (Done in 0.2s) -->
+                        <div class="absolute inset-0 bg-white anim-fast-skeleton p-2 space-y-1.5 z-10 pointer-events-none">
+                            <div class="h-16 bg-gray-100 rounded animate-pulse"></div>
+                            <div class="h-2 w-20 bg-gray-200 rounded animate-pulse"></div>
+                            <div class="h-2 w-12 bg-gray-200 rounded animate-pulse"></div>
+                            <div class="h-6 bg-gray-100 rounded animate-pulse"></div>
+                        </div>
+
+                        <!-- Instantly Rendered & Stable Ecommerce Product -->
+                        <div class="p-2 anim-fast-content space-y-1.5 flex-1 flex flex-col justify-between">
+                            <!-- Product Image Area -->
+                            <div class="h-16 bg-gradient-to-br from-emerald-50 to-teal-100 rounded flex items-center justify-center text-emerald-700 border border-emerald-200 relative overflow-hidden">
+                                <span class="absolute top-1 left-1 bg-emerald-600 text-white text-[7px] font-bold px-1 rounded">FAST</span>
+                                <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                            <!-- Product Details -->
+                            <div>
+                                <div class="text-[10px] font-bold text-gray-900 truncate">Performance Intake Kit</div>
+                                <div class="text-[9px] text-gray-500">★★★★★ • <span class="font-bold text-emerald-700">$189.00</span></div>
+                            </div>
+                            <!-- Action Button (Instant and stable) -->
+                            <div class="w-full py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[9px] font-bold text-center shadow-sm">
+                                Add to Cart
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Status Tag -->
+                    <div class="mt-2.5 text-center">
+                        <span class="text-[10px] text-emerald-300 font-bold bg-emerald-950/80 border border-emerald-700/80 px-2 py-0.5 rounded-full inline-block">
+                            ✓ 1.8s LCP • 100% Passes Google
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clear Explanatory Takeaway Footer -->
+            <p class="text-xs text-gray-300 font-medium mt-3.5 text-center">
+                Stores using VitalsPass load <span class="text-emerald-400 font-bold">2.4s faster</span> and pass Google Core Web Vitals on their existing theme.
             </p>
         </div>
     </header>
@@ -599,21 +608,54 @@
         </div>
     </footer>
 
-    <!-- Synced Live Timer Script -->
+    <!-- Synced Independent Race Stopwatches Script -->
     <script>
-        const timerEl = document.getElementById('loadTimer');
-        let startTime = Date.now();
-        const cycleDuration = 6500; // 6.5s animation cycle
+        const timerBeforeEl = document.getElementById('timerBefore');
+        const timerAfterEl = document.getElementById('timerAfter');
+        let raceStartTime = Date.now();
+        const raceCycleDuration = 6500; // 6.5s animation cycle
 
-        function updateTimer() {
-            const elapsed = (Date.now() - startTime) % cycleDuration;
-            const seconds = (elapsed / 1000).toFixed(1);
-            if (timerEl) {
-                timerEl.textContent = `${seconds}s`;
+        function updateRaceTimers() {
+            const elapsed = (Date.now() - raceStartTime) % raceCycleDuration;
+            const elapsedSec = elapsed / 1000;
+
+            // AFTER Timer: stops and locks at 1.8s!
+            if (timerAfterEl) {
+                if (elapsedSec < 1.8) {
+                    timerAfterEl.textContent = `${elapsedSec.toFixed(1)}s`;
+                    timerAfterEl.className = "text-[11px] font-mono text-gray-400 bg-black/60 px-2 py-0.5 rounded font-bold";
+                } else if (elapsedSec < 6.0) {
+                    timerAfterEl.textContent = "1.8s ✓";
+                    timerAfterEl.className = "text-[11px] font-mono text-emerald-400 bg-emerald-950/90 border border-emerald-600/60 px-2 py-0.5 rounded font-bold";
+                } else {
+                    // Reset window before next loop
+                    timerAfterEl.textContent = "0.0s";
+                    timerAfterEl.className = "text-[11px] font-mono text-gray-400 bg-black/60 px-2 py-0.5 rounded font-bold";
+                }
             }
-            requestAnimationFrame(updateTimer);
+
+            // BEFORE Timer: keeps ticking all the way to 4.2s!
+            if (timerBeforeEl) {
+                if (elapsedSec < 4.2) {
+                    timerBeforeEl.textContent = `${elapsedSec.toFixed(1)}s`;
+                    if (elapsedSec >= 2.5) {
+                        timerBeforeEl.className = "text-[11px] font-mono text-red-400 bg-red-950/80 border border-red-800/80 px-2 py-0.5 rounded font-bold";
+                    } else {
+                        timerBeforeEl.className = "text-[11px] font-mono text-gray-400 bg-black/60 px-2 py-0.5 rounded font-bold";
+                    }
+                } else if (elapsedSec < 6.0) {
+                    timerBeforeEl.textContent = "4.2s ✕";
+                    timerBeforeEl.className = "text-[11px] font-mono text-red-400 bg-red-950/90 border border-red-600/80 px-2 py-0.5 rounded font-bold";
+                } else {
+                    // Reset window before next loop
+                    timerBeforeEl.textContent = "0.0s";
+                    timerBeforeEl.className = "text-[11px] font-mono text-gray-400 bg-black/60 px-2 py-0.5 rounded font-bold";
+                }
+            }
+
+            requestAnimationFrame(updateRaceTimers);
         }
-        requestAnimationFrame(updateTimer);
+        requestAnimationFrame(updateRaceTimers);
     </script>
 </body>
 </html>
