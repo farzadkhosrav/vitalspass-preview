@@ -104,8 +104,8 @@
                 No Hyvä migration, no headless rebuild, and zero internal engineering required. We optimize your existing theme in an isolated branch. Instant page loads lift conversion rates, boost organic traffic and lower PPC costs.
             </p>
             
-            <!-- Email Capture Form -->
-            <form action="https://formkeep.com/f/placeholder" method="POST" class="w-full max-w-lg mb-2">
+            <!-- Email / URL Capture Form (Step 1) -->
+            <form onsubmit="openDiagnosticModal(event, 'store_url')" class="w-full max-w-lg mb-2">
                 <div class="flex flex-col sm:flex-row gap-2">
                     <label for="store_url" class="sr-only">Your store URL</label>
                     <input type="url" id="store_url" name="store_url" required placeholder="https://yourstore.com" 
@@ -116,7 +116,7 @@
                 </div>
                 <div class="flex items-center gap-2 text-xs text-gray-500 mt-2.5 font-medium">
                     <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                    <span>Root-cause analysis and qualification report delivered in 5 business days.</span>
+                    <span>Root-cause analysis and qualification report delivered in a few days.</span>
                 </div>
             </form>
         </div>
@@ -403,8 +403,8 @@
             <!-- Diagnostic CTA under Three Steps -->
             <div class="mt-12 pt-10 border-t border-gray-800/80 text-center max-w-xl mx-auto">
                 <h3 class="text-lg sm:text-xl font-bold text-white mb-2">Ready to see if your store qualifies?</h3>
-                <p class="text-xs sm:text-sm text-gray-400 mb-5">Start with Step 01: We'll pull your CrUX field data and deliver your root-cause qualification report in 5 business days.</p>
-                <form action="https://formkeep.com/f/placeholder" method="POST" class="w-full max-w-md mx-auto">
+                <p class="text-xs sm:text-sm text-gray-400 mb-5">Start with Step 01: Enter your store URL. We'll pull your CrUX field data and deliver your root-cause qualification report in a few days.</p>
+                <form onsubmit="openDiagnosticModal(event, 'step_store_url')" class="w-full max-w-md mx-auto">
                     <div class="flex flex-col sm:flex-row gap-2">
                         <label for="step_store_url" class="sr-only">Your store URL</label>
                         <input type="url" id="step_store_url" name="store_url" required placeholder="https://yourstore.com" 
@@ -546,9 +546,10 @@
         <div class="max-w-2xl mx-auto px-4">
             <h2 class="text-2xl font-extrabold text-gray-950 mb-3">See if your store qualifies.</h2>
             <p class="text-sm text-gray-600 mb-6">Fixed fee agreed upfront. Success fee owed only on a verified public pass.</p>
-            <form action="https://formkeep.com/f/placeholder" method="POST" class="w-full max-w-md mx-auto">
+            <form onsubmit="openDiagnosticModal(event, 'final_store_url')" class="w-full max-w-md mx-auto">
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <input type="url" name="store_url" required placeholder="https://yourstore.com" 
+                    <label for="final_store_url" class="sr-only">Your store URL</label>
+                    <input type="url" id="final_store_url" name="store_url" required placeholder="https://yourstore.com" 
                         class="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 outline-none">
                     <button type="submit" class="px-5 py-3 bg-gray-950 hover:bg-gray-800 text-white font-bold text-sm rounded-lg transition-all shadow">
                         Get my store diagnostic
@@ -620,6 +621,156 @@
             requestAnimationFrame(updateRaceTimers);
         }
         requestAnimationFrame(updateRaceTimers);
+    </script>
+
+    <!-- Diagnostic Lead Capture Modal (Step 2 of 2) -->
+    <div id="diagnosticModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/75 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-gray-200 relative transform transition-transform duration-200 scale-95" id="modalCard">
+            <!-- Close Button -->
+            <button onclick="closeDiagnosticModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors p-1" aria-label="Close modal">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <!-- Form State (Step 2) -->
+            <div id="modalFormState">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="inline-flex items-center text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        Step 2 of 2
+                    </span>
+                    <span class="text-xs text-gray-400 font-medium">Delivery details</span>
+                </div>
+
+                <h3 class="text-xl font-extrabold text-gray-950 tracking-tight mb-1.5">Where should we send your diagnostic?</h3>
+                <p class="text-xs text-gray-500 mb-5 leading-relaxed">
+                    We'll analyze <span id="modalDisplayUrl" class="font-bold text-gray-900 break-all font-mono">your store</span> and email your complete Core Web Vitals diagnostic in a few days.
+                </p>
+
+                <form id="leadDetailsForm" onsubmit="submitDiagnosticLead(event)" class="space-y-3.5">
+                    <input type="hidden" id="modalHiddenUrl" name="store_url" value="">
+                    
+                    <div>
+                        <label for="lead_name" class="block text-xs font-bold text-gray-700 mb-1">Your Name</label>
+                        <input type="text" id="lead_name" name="name" required placeholder="e.g. Alex Morgan" 
+                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-gray-950 focus:border-gray-950 outline-none">
+                    </div>
+
+                    <div>
+                        <label for="lead_email" class="block text-xs font-bold text-gray-700 mb-1">Work Email</label>
+                        <input type="email" id="lead_email" name="email" required placeholder="alex@company.com" 
+                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-gray-950 focus:border-gray-950 outline-none">
+                    </div>
+
+                    <button type="submit" id="modalSubmitBtn" class="w-full mt-2 py-3 bg-gray-950 hover:bg-gray-800 text-white font-bold rounded-lg transition-all shadow-md text-sm flex items-center justify-center gap-2">
+                        <span>Send My Diagnostic Report</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+
+                    <div class="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 mt-2 font-medium">
+                        <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <span>Delivered in a few days • 100% confidential • No spam</span>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Confirmation / Success State -->
+            <div id="modalSuccessState" class="hidden text-center py-4">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <h3 class="text-xl font-extrabold text-gray-950 mb-2">Diagnostic Queued!</h3>
+                <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+                    Thank you, <span id="successName" class="font-bold text-gray-900"></span>. We've queued <span id="successUrl" class="font-bold text-gray-900 break-all font-mono"></span> for root-cause analysis. We will email your full diagnostic report to <span id="successEmail" class="font-bold text-gray-900"></span> in a few days.
+                </p>
+                <button onclick="closeDiagnosticModal()" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-lg text-sm transition-colors">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnostic Modal & 2-Step Flow Logic -->
+    <script>
+        function openDiagnosticModal(event, inputId) {
+            event.preventDefault();
+            const inputEl = document.getElementById(inputId);
+            if (!inputEl || !inputEl.value.trim()) return;
+
+            let url = inputEl.value.trim();
+            if (!/^https?:\/\//i.test(url)) {
+                url = 'https://' + url;
+            }
+
+            const modal = document.getElementById('diagnosticModal');
+            const modalCard = document.getElementById('modalCard');
+            const modalDisplayUrl = document.getElementById('modalDisplayUrl');
+            const modalHiddenUrl = document.getElementById('modalHiddenUrl');
+            const formState = document.getElementById('modalFormState');
+            const successState = document.getElementById('modalSuccessState');
+            const nameInput = document.getElementById('lead_name');
+
+            modalDisplayUrl.textContent = url;
+            modalHiddenUrl.value = url;
+
+            formState.classList.remove('hidden');
+            successState.classList.add('hidden');
+
+            modal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                modal.classList.remove('opacity-0');
+                modalCard.classList.remove('scale-95');
+                modalCard.classList.add('scale-100');
+                if (nameInput) nameInput.focus();
+            });
+        }
+
+        function closeDiagnosticModal() {
+            const modal = document.getElementById('diagnosticModal');
+            const modalCard = document.getElementById('modalCard');
+            modal.classList.add('opacity-0');
+            modalCard.classList.remove('scale-100');
+            modalCard.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDiagnosticModal();
+        });
+
+        // Close on backdrop click
+        document.getElementById('diagnosticModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'diagnosticModal') closeDiagnosticModal();
+        });
+
+        function submitDiagnosticLead(event) {
+            event.preventDefault();
+            const url = document.getElementById('modalHiddenUrl').value;
+            const name = document.getElementById('lead_name').value.trim();
+            const email = document.getElementById('lead_email').value.trim();
+            const btn = document.getElementById('modalSubmitBtn');
+
+            btn.disabled = true;
+            btn.innerHTML = `<span>Queuing Analysis...</span>`;
+
+            // Submit asynchronously
+            fetch("https://formkeep.com/f/placeholder", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                body: JSON.stringify({ store_url: url, name: name, email: email })
+            }).catch(() => {/* Silent catch for placeholder */});
+
+            setTimeout(() => {
+                document.getElementById('modalFormState').classList.add('hidden');
+                document.getElementById('modalSuccessState').classList.remove('hidden');
+                document.getElementById('successName').textContent = name;
+                document.getElementById('successUrl').textContent = url;
+                document.getElementById('successEmail').textContent = email;
+                btn.disabled = false;
+                btn.innerHTML = `<span>Send My Diagnostic Report</span>`;
+            }, 400);
+        }
     </script>
 </body>
 </html>
